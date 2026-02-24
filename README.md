@@ -1,4 +1,4 @@
-# 🚀 SD-Turbo: Fast Local Image Generation
+#  SD-Turbo: Fast Local Image Generation
 
 A **production-ready**, **open-source** image generation system using Stable Diffusion Turbo for **ultra-fast** local inference.
 
@@ -276,22 +276,3 @@ The result: A model that generates high-quality images in **1-4 steps** instead 
 - Latent space is **low-dimensional** (4×64×64 for 512×512 image)
 - Modern GPUs have **specialized FP16 hardware** (Tensor Cores)
 
-## 🤝 Contributing
-
-This is a minimal, production-focused implementation. Potential extensions:
-
-- LoRA fine-tuning for specific domains
-- ControlNet integration for guided generation
-- Web UI interface
-- API server implementation
-- Multi-GPU support for batch processing
-
-## 📄 License
-
-MIT License - Free for commercial and personal use
-
----
-
-**Built for**: Fast, local, open-source image generation  
-**Optimized for**: Low latency, low VRAM, production deployment  
-**Perfect for**: Real-time applications, offline scenarios, cost-sensitive projects
