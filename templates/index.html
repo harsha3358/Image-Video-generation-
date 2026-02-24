@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Anime Image Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-section, .output-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .input-section h2, .output-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        textarea, select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus, select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #7c3aed;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .steps-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .step-option {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .step-option:hover {
+            border-color: #7c3aed;
+        }
+
+        .step-option.selected {
+            border-color: #7c3aed;
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .examples {
+            margin-top: 20px;
+        }
+
+        .examples h3 {
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+
+        .example-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .example-tag {
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .example-tag:hover {
+            background: #e2e8f0;
+        }
+
+        .output-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-container {
+            width: 100%;
+            max-width: 512px;
+            min-height: 200px;
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a0aec0;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .generated-image {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .notification {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .notification.error {
+            background: #fed7d7;
+            border: 1px solid #fc8181;
+            color: #c53030;
+        }
+
+        .notification.warning {
+            background: #fef5e7;
+            border: 1px solid #f6ad55;
+            color: #c05621;
+        }
+
+        .notification.success {
+            background: #c6f6d5;
+            border: 1px solid #68d391;
+            color: #276749;
+        }
+
+        .suggestion-btn {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .suggestion-btn:hover {
+            background: #2c5282;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #7c3aed;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Anime Image Generator</h1>
+            <p>Fast, local anime image generation with SD-Turbo</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2>✨ Create Your Anime</h2>
+
+                <div class="form-group">
+                    <label for="prompt">Prompt:</label>
+                    <textarea id="prompt" placeholder="Describe your anime character or scene..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Inference Steps:</label>
+                    <div class="steps-group">
+                        <div class="step-option selected" data-steps="1">1 Step<br><small>Fast (~80ms)</small></div>
+                        <div class="step-option" data-steps="2">2 Steps<br><small>Balanced (~140ms)</small></div>
+                        <div class="step-option" data-steps="4">4 Steps<br><small>Best (~250ms)</small></div>
+                    </div>
+                </div>
+
+                <button id="generate-btn" class="generate-btn">🚀 Generate Anime Image</button>
+
+                <div class="examples">
+                    <h3>💡 Example Prompts:</h3>
+                    <div class="example-tags">
+                        <span class="example-tag">anime girl with blue hair and magical powers</span>
+                        <span class="example-tag">cute chibi character in fantasy setting</span>
+                        <span class="example-tag">cyberpunk Tokyo street anime style</span>
+                        <span class="example-tag">magical girl transformation scene</span>
+                        <span class="example-tag">mecha robot battle in animated style</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="output-section">
+                <h2>🎭 Generated Image</h2>
+
+                <div id="notification" class="notification"></div>
+
+                <div class="image-container" id="image-container">
+                    <div>Your anime image will appear here</div>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    Generating your anime image...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const promptTextarea = document.getElementById('prompt');
+            const generateBtn = document.getElementById('generate-btn');
+            const imageContainer = document.getElementById('image-container');
+            const notification = document.getElementById('notification');
+            const loading = document.getElementById('loading');
+            let selectedSteps = 2;
+
+            // Step selection
+            document.querySelectorAll('.step-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.step-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedSteps = parseInt(this.dataset.steps);
+                });
+            });
+
+            // Example tags
+            document.querySelectorAll('.example-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    promptTextarea.value = this.textContent;
+                });
+            });
+
+            // Generate button
+            generateBtn.addEventListener('click', async function() {
+                const prompt = promptTextarea.value.trim();
+                if (!prompt) {
+                    showNotification('Please enter a prompt!', 'error');
+                    return;
+                }
+
+                // Show loading
+                loading.style.display = 'block';
+                imageContainer.style.display = 'none';
+                generateBtn.disabled = true;
+                generateBtn.textContent = 'Generating...';
+
+                try {
+                    const response = await fetch('/generate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            prompt: prompt,
+                            steps: selectedSteps
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        if (data.out_of_domain) {
+                            showOutOfDomainNotification(data);
+                        } else {
+                            showNotification(data.message, 'error');
+                        }
+                    } else {
+                        showNotification('Anime image generated successfully!', 'success');
+                        displayImage(data.image);
+                    }
+                } catch (error) {
+                    showNotification('Generation failed. Please try again.', 'error');
+                    console.error('Error:', error);
+                } finally {
+                    loading.style.display = 'none';
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = '🚀 Generate Anime Image';
+                }
+            });
+
+            function showNotification(message, type) {
+                notification.className = `notification ${type}`;
+                notification.innerHTML = message;
+                notification.style.display = 'block';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
+            }
+
+            function showOutOfDomainNotification(data) {
+                notification.className = 'notification warning';
+                notification.innerHTML = `
+                    <strong>⚠️ ${data.message}</strong><br>
+                    ${data.details}<br><br>
+                    <strong>Suggested anime prompt:</strong> ${data.suggestion}<br>
+                    <button class="suggestion-btn" onclick="useSuggestion('${data.suggestion}')">Use Suggestion</button>
+                `;
+                notification.style.display = 'block';
+            }
+
+            function displayImage(imageData) {
+                imageContainer.innerHTML = `<img src="${imageData}" alt="Generated Anime" class="generated-image">`;
+                imageContainer.style.display = 'block';
+            }
+
+            window.useSuggestion = function(suggestion) {
+                promptTextarea.value = suggestion;
+                notification.style.display = 'none';
+            };
+        });
+    </script>
+</body>
+</html>
